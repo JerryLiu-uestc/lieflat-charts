@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lieflat Charts — Curated palettes</title>
+<script src="../palette-tokens.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:48px;background:#E7E5DF;font-family:Inter,Arial,sans-serif}
+main{max-width:1180px;margin:auto}.intro{margin:0 0 30px;color:#282824}.intro h1{font-size:26px;margin:0 0 6px}.intro p{margin:0;color:#66645F}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{padding:28px;border-radius:24px;background:var(--bg);color:var(--ink)}
+.card h2{font-size:17px;margin:0 0 4px}.sub{font-size:11px;color:var(--muted);margin-bottom:24px}.rows{display:grid;gap:13px}
+.row{display:grid;grid-template-columns:76px 1fr 38px;align-items:center;gap:10px;font-size:10px;font-weight:600}.track{height:14px;border-bottom:1px solid var(--grid)}
+.bar{height:13px;border-radius:0 99px 99px 0;background:var(--ink)}.row.focus .bar{background:var(--accent)}.value{text-align:right;font-weight:800}
+.src{font-size:9px;color:var(--faint);letter-spacing:.1em;margin-top:22px}.swatches{display:flex;gap:5px;margin-top:18px}
+.swatch{height:8px;flex:1;border-radius:99px}.wide{grid-column:1/-1}@media(max-width:760px){body{padding:20px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<main>
+  <header class="intro">
+    <h1>One dataset, five editorial moods</h1>
+    <p>Mono remains the default. Color appears only as a controlled publishing decision.</p>
+  </header>
+  <section class="grid" id="grid"></section>
+</main>
+<script>
+const DATA=[['Research',82],['Product',68],['Operations',51],['Brand',39]];
+const grid=document.getElementById('grid');
+for(const [name,p] of Object.entries(LIEFLAT_PALETTES.all)){
+  const card=document.createElement('article');
+  card.className='card'+(name==='midnight-bronze'?' wide':'');
+  const vars=LIEFLAT_PALETTES.cssVars(name);
+  for(const [key,value] of Object.entries(vars))card.style.setProperty(key,value);
+  const title=document.createElement('h2');title.textContent=p.label;card.appendChild(title);
+  const sub=document.createElement('div');sub.className='sub';sub.textContent=`${p.mode} · one accent · ordered luminance`;card.appendChild(sub);
+  const rows=document.createElement('div');rows.className='rows';
+  DATA.forEach(([label,value],index)=>{
+    const row=document.createElement('div');row.className='row'+(index===1?' focus':'');
+    const lab=document.createElement('span');lab.textContent=label;
+    const track=document.createElement('div');track.className='track';
+    const bar=document.createElement('div');bar.className='bar';bar.style.width=`${value}%`;track.appendChild(bar);
+    const val=document.createElement('span');val.className='value';val.textContent=value;
+    row.append(lab,track,val);rows.appendChild(row);
+  });
+  card.appendChild(rows);
+  const swatches=document.createElement('div');swatches.className='swatches';
+  p.ladder.forEach(color=>{const swatch=document.createElement('span');swatch.className='swatch';swatch.style.background=color;swatches.appendChild(swatch)});
+  card.appendChild(swatches);
+  const src=document.createElement('div');src.className='src';src.textContent=`CURATED PALETTE · ${name.toUpperCase()}`;card.appendChild(src);
+  grid.appendChild(card);
+}
+</script>
+</body>
+</html>

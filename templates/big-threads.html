@@ -117,6 +117,9 @@ DST.forEach((d,i)=>{
 
 // ── highlight machinery ──
 const nodeLabs=[...svg.querySelectorAll('.nodelab')];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+})[c]);
 const clear=()=>{
   svg.classList.remove('focused');
   routes.forEach(r=>r.el.classList.remove('hot'));
@@ -132,12 +135,12 @@ const focusRoutes=(rs,label)=>{
   });
   stext.innerHTML=label;
 };
-const routeLabel=r=>`<b>${SRC[r.s]}</b> → ${MID[r.m]} → <b>${DST[r.d]}</b> · ${fmt(r.v)}`;
+const routeLabel=r=>`<b>${esc(SRC[r.s])}</b> → ${esc(MID[r.m])} → <b>${esc(DST[r.d])}</b> · ${esc(fmt(r.v))}`;
 const nodeSel=(kind,idx)=>{
   const rs=routes.filter(r=>(kind==='s'&&r.s===idx)||(kind==='m'&&r.m===idx)||(kind==='d'&&r.d===idx));
   const total=rs.reduce((a,r)=>a+r.v,0);
   const name=kind==='s'?SRC[idx]:kind==='m'?MID[idx]:DST[idx];
-  return [rs,`<b>${name}</b> · ${rs.length} path${rs.length>1?'s':''} · ${fmt(total)} total`];
+  return [rs,`<b>${esc(name)}</b> · ${rs.length} path${rs.length>1?'s':''} · ${esc(fmt(total))} total`];
 };
 
 const apply=t=>{
