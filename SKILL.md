@@ -1,11 +1,11 @@
 ---
 name: lieflat-charts
-description: 一套模板驱动的单色数据可视化 skill，严格从 Lupi、Basics、Glance 与 Interactive gallery 的真实实现生成 HTML 图表；默认优先 Lupi Editorial 与 Lupi Basics，无合适模板时才使用 Glance。
+description: 一套模板驱动的编辑型数据可视化 skill，严格从 Lupi、Basics、Glance 与 Interactive gallery 的真实实现生成 HTML 图表；默认使用 Mono，并在用户明确要求彩色、品牌配色或特定艺术方向时启用策展调色板。
 ---
 
 # Lieflat Charts — 图表品味法典
 
-Lieflat Charts 是一套遵循 Agent Skills 格式的单色数据可视化 skill，专注于把数据图表做成有编辑感、能阅读、能组成完整页面的视觉内容。它由 moxt 与 Codex 协同制作，支持 Lupi 编辑叙事型、Glance 快速判断型、Basics 基础编辑型和 Interactive 交互大图。用户给你数据和场合，你产出一个无需构建、双击可打开的单文件 HTML，改数据只需要动顶部一个数组。纯 SVG 图可离线运行；使用 Chart.js、ECharts 或在线字体的图，在未内联依赖时需要联网。**默认必须先从 Lupi Editorial 和 Lupi Basics 中选型；只有两者都没有合适模板，或用户明确要求 Glance / dashboard / 三秒快读时，才允许使用 Glance。**
+Lieflat Charts 是一套遵循 Agent Skills 格式的编辑型数据可视化 skill，专注于把数据图表做成有编辑感、能阅读、能组成完整页面的视觉内容。它由 moxt 与 Codex 协同制作，支持 Lupi 编辑叙事型、Glance 快速判断型、Basics 基础编辑型和 Interactive 交互大图。用户给你数据和场合，你产出一个无需构建、双击可打开的单文件 HTML，改数据只需要动顶部一个数组。纯 SVG 图可离线运行；使用 Chart.js、ECharts 或在线字体的图，在未内联依赖时需要联网。**默认必须先从 Lupi Editorial 和 Lupi Basics 中选型；只有两者都没有合适模板，或用户明确要求 Glance / dashboard / 三秒快读时，才允许使用 Glance。**
 
 **怎么查一张图的参考代码**：catalog 查到图型 → 打开对应 gallery 文件 → 按卡内标题找到 `<div class="card">` 块看结构 → 在 `<script>` 里搜同名 `// ════` 注释块拿渲染代码。不要整页照抄——gallery 是多卡合页，交付给用户的永远是按第九节骨架组装的单图文件。
 
@@ -50,10 +50,11 @@ Lieflat Charts 是一套遵循 Agent Skills 格式的单色数据可视化 skill
 
 ## 二、Mono 语法 · 硬规则（违反即返工）
 
-引用 `mono-tokens.js`（开源分发时把内容内联进 HTML）。与 token 冲突的取值一律以 token 为准。
+默认引用 `mono-tokens.js`（开源分发时把内容内联进 HTML）。用户明确要求彩色、品牌配色或特定艺术方向时，再读取 `references/palettes.md` 并内联 `palette-tokens.js`。与 token 冲突的取值一律以 token 为准。
 
 **颜色**
-- 只有纸灰 `#F0EFEB` 和炭黑 `#1C1C1A` 两极，中间 7 级灰阶 ladder。没有彩色。
+- 默认使用 `mono-paper`：纸灰 `#F0EFEB`、炭黑 `#1C1C1A` 与 7 级灰阶 ladder。没有明确配色要求时禁止自动彩色化。
+- 彩色模式只能使用 `palette-tokens.js` 中的完整角色化调色板；一页只用一套，强调色只承担一个焦点，禁止彩虹式分类配色。
 - **明度即数据**：最重要 = 最黑（暗卡上反转为最亮）。多系列按重要性沿 ladder 分配，不按顺序随便拿。
 - **一律实心**：不透明材质、不发光、不渐变滤镜、无阴影。质感全靠明度对比和形状。唯一例外：叠加型图（Radial Patchwork）里透明度本身编码密度——那是数据，不是装饰。
 - 暗卡（`.card.dark`）只给两种图：必须暗底衬托的形（花瓣、发光感丝线/网络）。默认浅卡；每屏（4 卡）最多 1 张暗卡。
@@ -167,7 +168,7 @@ Lieflat Charts 是一套遵循 Agent Skills 格式的单色数据可视化 skill
 敢拒绝比什么都接更可信。以下情况不做，并给替代：
 
 - **断轴柱状图** → 拒绝，给三个诚实方案（冲天 / 放大镜 / 撕柱不撕轴）。
-- **彩色 / 发光 / 玻璃拟态 / 3D** → 不属于 Mono。用户坚持要彩色，说明他要的不是这个 skill，直说。
+- **任意彩色 / 发光 / 玻璃拟态 / 3D** → 拒绝。若用户需要高级感配色，读取 `references/palettes.md`，使用策展调色板或把品牌色翻译成角色化 token。
 - **地图类**（choropleth、轨迹图）→ 库里没有地理管线，老实说做不了，别硬画走样的。
 - **给纯装饰元素加交互**（第五节第 1 问）→ 拒绝并解释。
 - **雷达图重构** → 不重构，用 ECharts 原生雷达 + Mono token 换肤（实测过：展示场景里"认得出的图型"有价值）。

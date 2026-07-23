@@ -10,6 +10,7 @@ const required = [
   'SKILL.md',
   'catalog.md',
   'mono-tokens.js',
+  'palette-tokens.js',
   'agents/openai.yaml',
 ];
 
@@ -79,6 +80,11 @@ function collectText(dir) {
 }
 collectText(root);
 
+const paletteSource = fs.readFileSync(path.join(root, 'palette-tokens.js'), 'utf8');
+const allowedPaletteColors = new Set(
+  [...paletteSource.matchAll(/#[0-9a-fA-F]{6}\b/g)].map(match => match[0].toLowerCase()),
+);
+
 for (const file of textFiles) {
   const source = fs.readFileSync(file, 'utf8');
   const executableSource = rel(file) === 'scripts/validate.mjs'
@@ -96,7 +102,10 @@ for (const file of textFiles) {
       Number.parseInt(hex.slice(3, 5), 16),
       Number.parseInt(hex.slice(5, 7), 16),
     ];
-    if (Math.max(...channels) - Math.min(...channels) > 18) {
+    if (
+      Math.max(...channels) - Math.min(...channels) > 18
+      && !allowedPaletteColors.has(hex.toLowerCase())
+    ) {
       failures.push(`${rel(file)}:${lineNumber(source, match.index)} 检测到明显彩色值 ${hex}`);
     }
   }
@@ -106,6 +115,42 @@ try {
   new vm.Script(fs.readFileSync(path.join(root, 'mono-tokens.js'), 'utf8'), {
     filename: 'mono-tokens.js',
   });
+} catch (error) {
+  failures.push(error.message);
+}
+
+function luminance(hex) {
+  const channels = [1, 3, 5].map(index => Number.parseInt(hex.slice(index, index + 2), 16) / 255);
+  const linear = channels.map(value => (
+    value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+  ));
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+function contrast(a, b) {
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (light + 0.05) / (dark + 0.05);
+}
+
+try {
+  const sandbox = {};
+  vm.runInNewContext(paletteSource, sandbox, { filename: 'palette-tokens.js' });
+  const palettes = sandbox.LIEFLAT_PALETTES?.all;
+  if (!palettes || Object.keys(palettes).length < 5) {
+    failures.push('palette-tokens.js 至少需要 Mono 与 4 套策展配色');
+  } else {
+    for (const [name, palette] of Object.entries(palettes)) {
+      if (contrast(palette.ink, palette.bg) < 7) {
+        failures.push(`${name} 的正文与背景对比度低于 7:1`);
+      }
+      if (contrast(palette.muted, palette.bg) < 3) {
+        failures.push(`${name} 的次级信息与背景对比度低于 3:1`);
+      }
+      if (contrast(palette.accent, palette.bg) < 3) {
+        failures.push(`${name} 的强调色与背景对比度低于 3:1`);
+      }
+    }
+  }
 } catch (error) {
   failures.push(error.message);
 }

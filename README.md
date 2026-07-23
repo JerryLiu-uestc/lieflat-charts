@@ -86,7 +86,7 @@ npx skills add https://github.com/JerryLiu-uestc/lieflat-charts --skill lieflat-
 ```text
 帮我安装 lieflat-charts。请把 https://github.com/JerryLiu-uestc/lieflat-charts
 克隆到 ~/.claude/skills/lieflat-charts，安装完成后检查 SKILL.md、templates/、
-catalog.md 和 mono-tokens.js 是否存在。
+catalog.md、mono-tokens.js 和 palette-tokens.js 是否存在。
 ```
 
 使用 Codex 时，将安装路径换成 `~/.codex/skills/lieflat-charts`。
@@ -154,6 +154,8 @@ catalog.md 和 mono-tokens.js 是否存在。
 
 所有体系共享一套 Mono 视觉语法：纸灰与炭黑两极，加上中间灰阶；明度承担层级，位置、长度、密度和结构承担数据编码。创新不在于再发明一种孤立图型，而在于把图型选择、编辑排版、浏览器交互和整页叙事放进同一个可复用的 skill。
 
+默认仍使用 Mono。用户明确要求彩色、品牌配色或特定艺术方向时，可启用 4 套策展配色：Porcelain Blue、Forest Linen、Oxblood Parchment 与 Midnight Bronze。每套配色都定义完整的背景、文字、层级、网格与单一强调色，不采用彩虹分类、渐变、发光或玻璃拟态。
+
 因此，Lieflat Charts 和过去直接做 charts 的差别，不只是“换了颜色”：
 
 - 先判断数据契约，再选图型，而不是先挑一个库内模板
@@ -169,6 +171,8 @@ catalog.md 和 mono-tokens.js 是否存在。
 ├── SKILL.md                 # Agent 使用的工作流与规则
 ├── catalog.md               # 48 个图型的数据契约索引
 ├── mono-tokens.js           # 共享视觉 token
+├── palette-tokens.js        # 可选的策展调色板 token
+├── references/palettes.md   # 配色选择与使用规则
 ├── templates/               # Lupi、Basics、Glance 与交互大图
 ├── examples/                # 真实公开数据案例
 ├── docs/assets/             # README 模板截图与动态预览
