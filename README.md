@@ -78,13 +78,13 @@ Lieflat Charts 是一套遵循 Agent Skills 格式的单色数据可视化 skill
 一条命令安装：
 
 ```bash
-npx skills add https://github.com/larashero3-dotcom/lieflat-charts --skill lieflat-charts
+npx skills add https://github.com/JerryLiu-uestc/lieflat-charts --skill lieflat-charts
 ```
 
 也可以直接把这段话发给有 shell 权限的 AI Agent：
 
 ```text
-帮我安装 lieflat-charts。请把 https://github.com/larashero3-dotcom/lieflat-charts
+帮我安装 lieflat-charts。请把 https://github.com/JerryLiu-uestc/lieflat-charts
 克隆到 ~/.claude/skills/lieflat-charts，安装完成后检查 SKILL.md、templates/、
 catalog.md 和 mono-tokens.js 是否存在。
 ```
